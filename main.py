@@ -19,11 +19,10 @@ class Game:
     def check_winner(self):
         # check rows for winner
         def check_rows():
-            count = 0
-            first_elem = None
             winner = None
             for i in range(len(self.board)):
-                if winner:
+                count = 0
+                if (winner):
                     break
                 first_elem = self.board[i][0]
                 for j in range(len(self.board[i])):
@@ -43,12 +42,12 @@ class Game:
         # check columns for winner
 
         def check_columns():
-            count = 0
             winner = None
             for i in range(len(self.board)):
-                if winner:
+                count = 0
+                if (winner):
                     break
-                first_elem = self.board[i][0]
+                first_elem = self.board[0][i]
                 for j in range(len(self.board[i])):
                     if first_elem == 'X' and self.board[j][i] == 'X':
                         count = count + 1
@@ -85,6 +84,7 @@ class Game:
             if winner:
                 return winner
             else:
+                count = 0
                 for i in range(len(self.board)):
                     if last_elem == 'X' and self.board[i][len(self.board) - 1 - i] == 'X':
                         count = count + 1
@@ -109,7 +109,13 @@ class Game:
         winner = check_diagonals()
         if winner:
             return winner
-        if self.move_count == 0:
+        flag = 'tie'
+        for i in range(len(self.board)):
+            for j in range(len(self.board[i])):
+                if (self.board[i][j] == None):
+                    flag = None
+                    break
+        if (flag == 'tie'):
             return 'tie'
         return None
 
@@ -177,8 +183,12 @@ class Game:
             self.make_move(move)
             # print(move)
         winner = self.check_winner()
-        if (winner):
+        if (winner and winner != 'tie'):
             print(f"And the winner is {winner}")
+            print(self.board)
+            return
+        elif(winner == 'tie'):
+            print('It is a tie')
             print(self.board)
             return
         self.flip_player()
@@ -201,4 +211,3 @@ player = input()
 board = Game(board_size, player)
 
 board.play()
-
