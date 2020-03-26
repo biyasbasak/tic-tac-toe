@@ -1,5 +1,4 @@
-import http.client
-import mimetypes
+import requests
 
 
 class agent:
@@ -7,119 +6,67 @@ class agent:
         self.board = []
         self.termination = False
         self.state = ''
+        self.baseURL = "http://www.notexponential.com/aip2pgaming/api/index.php"
 
     def get_board_string(self, gameId):
-        conn = http.client.HTTPSConnection("www.notexponential.com")
-        boundary = ''
-        payload = ''
         headers = {
             'x-api-key': '21be1b176c5d8c7bc09c',
             'userid': '843',
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'Content-type': 'multipart/form-data; boundary={}'.format(boundary)
+            "User-Agent": "Mozilla / 5.0(X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36"
         }
-        conn.request("GET", "/aip2pgaming/api/index.php?type=boardString&gameId={}".format(gameId), payload, headers)
-        res = conn.getresponse()
-        data = res.read()
-        decoded_data = data.decode("utf-8")
-        print(decoded_data)
-        splitted_data = decoded_data.split('"')
-        board_string = splitted_data[3]
-        self.board = board_string.split('\\n')[:-1]
-        print(self.board)
-        self.state = splitted_data[-2]
-        print(self.state)
+        payload = {
+            "type": "boardString",
+            "gameId": gameId
+        }
+        response = requests.get(self.baseURL, params=payload, headers=headers)
+        print(response.text)
 
     def get_board_map(self, gameId):
-        conn = http.client.HTTPSConnection("www.notexponential.com")
-        boundary = ''
-        payload = ''
         headers = {
-            'x-api-key': '21be1b176c5d8c7bc09c',
-            'userid': '843',
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'Content-type': 'multipart/form-data; boundary={}'.format(boundary)
+            "x-api-key": "21be1b176c5d8c7bc09c",
+            "userid": "843",
+            "User-Agent": "Mozilla / 5.0(X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36"
         }
-        conn.request("GET", "/aip2pgaming/api/index.php?type=boardMap&gameId={}".format(gameId), payload, headers)
-        res = conn.getresponse()
-        data = res.read()
-        decoded_data = data.decode("utf-8")
-        print(decoded_data)
-        splitted_data = decoded_data.split('"')
-        self.state = splitted_data[-2]
-        print(self.state)
+        payload = {
+            "type": "boardMap",
+            "gameId": gameId
+        }
+        response = requests.get(self.baseURL, params=payload, headers=headers)
+        print(response.text)
 
     def get_moves(self, gameId, move_count):
-        conn = http.client.HTTPSConnection("www.notexponential.com")
-        boundary = ''
-        payload = ''
         headers = {
-            'x-api-key': '21be1b176c5d8c7bc09c',
-            'userid': '843',
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'Content-type': 'multipart/form-data; boundary={}'.format(boundary)
+            "x-api-key": "21be1b176c5d8c7bc09c",
+            "userid": "843",
+            "User-Agent": "Mozilla / 5.0(X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36"
         }
-        conn.request("GET", "/aip2pgaming/api/index.php?type=moves&gameId=87&count=20", payload, headers)
-        res = conn.getresponse()
-        data = res.read()
-        print(data.decode("utf-8"))
+        payload = {
+            "type": "moves",
+            "gameId": gameId,
+            "count": move_count
+        }
+        response = requests.get(self.baseURL, params=payload, headers=headers)
+        print(response.text)
 
-
-    def make_move(self, move):
-        # unsolved problem: {"code":"FAIL","message":"No POST supported for action type: "}
-        conn = http.client.HTTPSConnection("www.notexponential.com")
-        dataList = []
-        boundary = 'wL36Yn8afVp8Ag7AmP8qZ0SA4n1v9T'
-        dataList.append('--' + boundary)
-        dataList.append('Content-Disposition: form-data; name=teamId;')
-
-        dataList.append('Content-Type: {}'.format('multipart/form-data'))
-        dataList.append('')
-
-        dataList.append("1191")
-        dataList.append('--' + boundary)
-        dataList.append('Content-Disposition: form-data; name=move;')
-
-        dataList.append('Content-Type: {}'.format('multipart/form-data'))
-        dataList.append('')
-
-        dataList.append("6,8")
-        dataList.append('--' + boundary)
-        dataList.append('Content-Disposition: form-data; name=type;')
-
-        dataList.append('Content-Type: {}'.format('multipart/form-data'))
-        dataList.append('')
-
-        dataList.append("move")
-        dataList.append('--' + boundary)
-        dataList.append('Content-Disposition: form-data; name=gameId;')
-
-        dataList.append('Content-Type: {}'.format('multipart/form-data'))
-        dataList.append('')
-
-        dataList.append("87")
-        dataList.append('--' + boundary + '--')
-        dataList.append('')
-        body = '\r\n'.join(dataList)
-        payload = body
+    def make_move(self, move,gameID):
         headers = {
-            'x-api-key': '21be1b176c5d8c7bc09c',
-            'userid': '843',
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'Content-type': 'multipart/form-data; boundary={}'.format(boundary)
+            "x-api-key": "90da155fac97298ba06a",
+            "userId": "837",
+            "User-Agent": "Mozilla / 5.0(X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36"
         }
-        conn.request("POST", "/aip2pgaming/api/index.php", payload, headers)
-        res = conn.getresponse()
-        data = res.read()
-        print(data.decode("utf-8"))
-
+        payload = {
+            "teamId": "1191",
+            "move": "0,0",
+            "type": "move",
+            "gameId": gameID
+        }
+        response = requests.post(self.baseURL, headers=headers, data=payload)
+        print(response.text)
 
 def test():
     closeAI = agent()
     closeAI.get_board_string(87)
     closeAI.get_board_map(87)
     closeAI.get_moves(87, 20)
-    closeAI.make_move((6,8))
-
-
+    closeAI.make_move({6, 8},95)
 test()
