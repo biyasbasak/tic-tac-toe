@@ -23,16 +23,16 @@ class Game:
             first_elem = None
             winner = None
             for i in range(len(self.board)):
-                if (winner):
+                if winner:
                     break
                 first_elem = self.board[i][0]
                 for j in range(len(self.board[i])):
-                    if (first_elem == 'X' and self.board[i][j] == 'X'):
+                    if first_elem == 'X' and self.board[i][j] == 'X':
                         count = count + 1
                         if (count == self.size):
                             winner = 'X'
                             break
-                    elif (first_elem == 'O' and self.board[i][j] == 'O'):
+                    elif first_elem == 'O' and self.board[i][j] == 'O':
                         count = count + 1
                         if (count == self.size):
                             winner = 'O'
@@ -46,18 +46,18 @@ class Game:
             count = 0
             winner = None
             for i in range(len(self.board)):
-                if (winner):
+                if winner:
                     break
                 first_elem = self.board[i][0]
                 for j in range(len(self.board[i])):
-                    if (first_elem == 'X' and self.board[j][i] == 'X'):
+                    if first_elem == 'X' and self.board[j][i] == 'X':
                         count = count + 1
                         if (count == self.size):
                             winner = 'X'
                             break
-                    elif (first_elem == 'O' and self.board[j][i] == 'O'):
+                    elif first_elem == 'O' and self.board[j][i] == 'O':
                         count = count + 1
-                        if (count == self.size):
+                        if count == self.size:
                             winner = 'O'
                             break
                     else:
@@ -70,30 +70,30 @@ class Game:
             first_elem = self.board[0][0]
             last_elem = self.board[0][self.size - 1]
             for i in range(len(self.board)):
-                if (first_elem == 'X' and self.board[i][i] == 'X'):
+                if first_elem == 'X' and self.board[i][i] == 'X':
                     count = count + 1
-                    if (count == self.size):
+                    if count == self.size:
                         winner = 'X'
                         break
-                elif (first_elem == 'O' and self.board[i][i] == 'O'):
+                elif first_elem == 'O' and self.board[i][i] == 'O':
                     count = count + 1
-                    if (count == self.size):
+                    if count == self.size:
                         winner = 'O'
                         break
                 else:
                     count = 0
-            if (winner):
+            if winner:
                 return winner
             else:
                 for i in range(len(self.board)):
-                    if (last_elem == 'X' and self.board[i][len(self.board) - 1 - i] == 'X'):
+                    if last_elem == 'X' and self.board[i][len(self.board) - 1 - i] == 'X':
                         count = count + 1
-                        if (count == self.size):
+                        if count == self.size:
                             winner = 'X'
                             break
-                    elif (last_elem == 'O' and self.board[i][len(self.board) - 1 - i] == 'O'):
+                    elif last_elem == 'O' and self.board[i][len(self.board) - 1 - i] == 'O':
                         count = count + 1
-                        if (count == self.size):
+                        if count == self.size:
                             winner = 'O'
                             break
                     else:
@@ -101,20 +101,20 @@ class Game:
             return winner
 
         winner = check_rows()
-        if (winner):
+        if winner:
             return winner
         winner = check_columns()
-        if (winner):
+        if winner:
             return winner
         winner = check_diagonals()
-        if (winner):
+        if winner:
             return winner
-        if (self.move_count == 0):
+        if self.move_count == 0:
             return 'tie'
         return None
 
     def flip_player(self):
-        if (self.current_player == 'X'):
+        if self.current_player == 'X':
             self.current_player = 'O'
         else:
             self.current_player = 'X'
@@ -124,10 +124,10 @@ class Game:
         best_move = None
         for i in range(len(self.board)):
             for j in range(len(self.board[i])):
-                if (self.board[i][j] == None):
+                if self.board[i][j] is None:
                     self.board[i][j] = self.current_player
                     score = self.minimax(0, False)
-                    if (score > best_score):
+                    if score > best_score:
                         best_move = (i, j)
                         best_score = score
                     self.board[i][j] = None
@@ -136,14 +136,14 @@ class Game:
     def minimax(self, depth, isMax):
         winner = self.check_winner()
         score = 0
-        if (winner):
+        if winner:
             score = self.scores[winner]
             return score
-        if (isMax):
+        if isMax:
             maxScore = -sys.maxsize
             for i in range(len(self.board)):
                 for j in range(len(self.board[i])):
-                    if (self.board[i][j] == None):
+                    if self.board[i][j] is None:
                         self.board[i][j] = self.player
                         score = self.minimax(depth+1, False)
                         maxScore = max(score, maxScore)
@@ -153,7 +153,7 @@ class Game:
             minScore = sys.maxsize
             for i in range(len(self.board)):
                 for j in range(len(self.board[i])):
-                    if (self.board[i][j] == None):
+                    if self.board[i][j] is None:
                         self.board[i][j] = self.opponent
                         score = self.minimax(depth+1, True)
                         minScore = min(score, minScore)
