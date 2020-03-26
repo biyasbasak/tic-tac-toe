@@ -120,16 +120,16 @@ class Game:
             self.current_player = 'X'
 
     def best_possible_move(self):
-        print("minimax algorithm")
         best_score = -sys.maxsize
         best_move = None
         for i in range(len(self.board)):
             for j in range(len(self.board[i])):
                 if (self.board[i][j] == None):
                     self.board[i][j] = self.current_player
-                    score = self.minimax(0, True)
+                    score = self.minimax(0, False)
                     if (score > best_score):
                         best_move = (i, j)
+                        best_score = score
                     self.board[i][j] = None
         return best_move
 
@@ -167,21 +167,20 @@ class Game:
     # recursively calls itself after every move
 
     def play(self):
-        winner = self.check_winner()
-        if (winner):
-            print(f"And the winner is {winner}")
-            print(self.board)
-            return
         if (self.current_player == self.player):
             best_move = self.best_possible_move()
             self.make_move(best_move)
-            # print(best_move)
         else:
             print("Enter opponent's move")
             move = input()
             move = tuple(move.split(","))
             self.make_move(move)
             # print(move)
+        winner = self.check_winner()
+        if (winner):
+            print(f"And the winner is {winner}")
+            print(self.board)
+            return
         self.flip_player()
         self.play()
 
