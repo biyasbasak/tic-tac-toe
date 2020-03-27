@@ -81,14 +81,14 @@ class agent:
         }
         payload = {
             "teamId": "1191",
-            "move": move[0] +  + move[1],
+            "move": str(move[0]) + ',' + str(move[1]),
             "type": "move",
             "gameId": gameID
         }
         response = requests.post(self.baseURL, headers=headers, data=payload)
         print(response.text)
 
-    def create_game(self, opponentID):
+    def create_game(self, teamId1, teamId2):
         headers = {
             "x-api-key": "90da155fac97298ba06a",
             "userId": "837",
@@ -96,8 +96,8 @@ class agent:
         }
         payload = {
             "type": "game",
-            "teamId1": "1191",
-            "teamId2": opponentID,
+            "teamId1": teamId1,
+            "teamId2": teamId2,
             "gameType": "TTT"
         }
         response = requests.post(self.baseURL, headers=headers, data=payload)
@@ -110,8 +110,8 @@ class agent:
 def test():
     closeAI = agent()
     opponent = 1191
-    # new_game = closeAI.create_game(opponent)
-    game = 198
+    # new_game = closeAI.create_game(1191, opponent)
+    game = 196
     closeAI.get_games()
     closeAI.get_board_string(game)
     closeAI.get_board_map(game)
