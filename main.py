@@ -5,129 +5,123 @@ import sys
 class Game:
     def __init__(self, n, player):
         self.size = n
-        self.player = player
-        self.opponent = "O" if player == 'X' else 'X'
+        self.target = int(n / 2)
+        self.player = 'X' if player == 'X' else 'O'
+        self.opponent = 'O' if player == 'X' else 'X'
         self.current_player = 'X'  # initial player is X
         self.board = [[None for x in range(n)] for x in range(n)]
         self.move_count = n ** n
         self.scores = {
             "X": 10,
             "O": -10,
-            "tie": 0
+            "Draw": 0
         }
         self.alpha = -sys.maxsize
         self.beta = sys.maxsize
 
-    def scoreSelection(self):
-    if self.player == 'O':
-        self.scores = {
-            "X": -10,
-            "O": 10,
-            "tie": 0
-        }
+    def score_selection(self):
+        if self.player == 'O':
+            self.scores = {
+                "X": -10,
+                "O": 10,
+                "Draw": 0
+            }
 
     def check_winner(self):
-        # check rows for winner
+        def valid(x, y):
+            return 0 <= x < self.size and 0 <= y < self.size
+
         def check_rows():
             winner = None
-            for i in range(len(self.board)):
-                count = 0
-                if (winner):
-                    break
-                first_elem = self.board[i][0]
-                for j in range(len(self.board[i])):
-                    if first_elem == 'X' and self.board[i][j] == 'X':
-                        count = count + 1
-                        if count == self.size:
-                            winner = 'X'
-                            break
-                    elif first_elem == 'O' and self.board[i][j] == 'O':
-                        count = count + 1
-                        if count == self.size:
-                            winner = 'O'
-                            break
-                    else:
+            for i in range(self.size):
+                for j in range(self.size):
+                    if j > self.target:
+                        break
+                    if self.board[i][j]:
+                        first_elem = self.board[i][j]
                         count = 0
+                        for k in range(self.target):
+                            if self.board[i][j + k] != first_elem:
+                                j = j + k
+                                break
+                            else:
+                                count += 1
+                        if count >= self.target:
+                            winner = first_elem
+                            return winner
             return winner
-        # check columns for winner
 
         def check_columns():
             winner = None
-            for i in range(len(self.board)):
-                count = 0
-                if (winner):
-                    break
-                first_elem = self.board[0][i]
-                for j in range(len(self.board[i])):
-                    if first_elem == 'X' and self.board[j][i] == 'X':
-                        count = count + 1
-                        if count == self.size:
-                            winner = 'X'
-                            break
-                    elif first_elem == 'O' and self.board[j][i] == 'O':
-                        count = count + 1
-                        if count == self.size:
-                            winner = 'O'
-                            break
-                    else:
+            for j in range(self.size):
+                for i in range(self.size):
+                    if i > self.target:
+                        break
+                    if self.board[i][j]:
+                        first_elem = self.board[i][j]
                         count = 0
+                        for k in range(self.target):
+                            if self.board[i + k][j] != first_elem:
+                                i = i + k
+                                break
+                            else:
+                                count += 1
+                        if count >= self.target:
+                            winner = first_elem
+                            return winner
             return winner
 
-        def check_diagonals():
-            count = 0
+        def check_diagonal_a():
             winner = None
-            first_elem = self.board[0][0]
-            last_elem = self.board[0][self.size - 1]
-            for i in range(len(self.board)):
-                if first_elem == 'X' and self.board[i][i] == 'X':
-                    count = count + 1
-                    if count == self.size:
-                        winner = 'X'
-                        break
-                elif first_elem == 'O' and self.board[i][i] == 'O':
-                    count = count + 1
-                    if count == self.size:
-                        winner = 'O'
-                        break
-                else:
-                    count = 0
-            if winner:
-                return winner
-            else:
-                count = 0
-                for i in range(len(self.board)):
-                    if last_elem == 'X' and self.board[i][len(self.board) - 1 - i] == 'X':
-                        count = count + 1
-                        if count == self.size:
-                            winner = 'X'
-                            break
-                    elif last_elem == 'O' and self.board[i][len(self.board) - 1 - i] == 'O':
-                        count = count + 1
-                        if count == self.size:
-                            winner = 'O'
-                            break
-                    else:
+            for i in range(self.size):
+                for j in range(self.size):
+                    if self.board[i][j]:
+                        first_elem = self.board[i][j]
                         count = 0
+                        for k in range(self.target):
+                            if valid(i + k, j + k):
+                                if self.board[i + k][j + k] != first_elem:
+                                    break
+                                else:
+                                    count += 1
+                            else:
+                                break
+                        if count >= self.target:
+                            winner = first_elem
+                            return winner
             return winner
 
-        winner = check_rows()
+        def check_diagonal_b():
+            winner = None
+            for i in range(self.size):
+                for j in range(self.size):
+                    if self.board[i][j]:
+                        first_elem = self.board[i][j]
+                        count = 0
+                        for k in range(self.target):
+                            if valid(i + k, j - k):
+                                if self.board[i + k][j - k] != first_elem:
+                                    break
+                                else:
+                                    count += 1
+                            else:
+                                break
+                        if count >= self.target:
+                            winner = first_elem
+                            return winner
+            return winner
+
+        winner = check_columns() or check_rows() or check_diagonal_a() or check_diagonal_b()
         if winner:
             return winner
-        winner = check_columns()
-        if winner:
-            return winner
-        winner = check_diagonals()
-        if winner:
-            return winner
-        flag = 'tie'
-        for i in range(len(self.board)):
-            for j in range(len(self.board[i])):
-                if (self.board[i][j] == None):
+
+        flag = 'Draw'
+        for i in range(self.size):
+            for j in range(self.size):
+                if self.board[i][j] == None:
                     flag = None
                     break
-        if (flag == 'tie'):
-            return 'tie'
-        return None
+        return flag
 
     def flip_player(self):
         if self.current_player == 'X':
@@ -136,6 +130,7 @@ class Game:
             self.current_player = 'X'
 
     def best_possible_move(self):
+        print("Computing best move for {}...".format(self.current_player))
         best_score = -sys.maxsize
         best_move = None
         for i in range(len(self.board)):
@@ -189,7 +184,7 @@ class Game:
     # recursively calls itself after every move
 
     def play(self):
-        self.scoreSelection()
+        self.score_selection()
         if self.current_player == self.player:
             best_move = self.best_possible_move()
             self.make_move(best_move)
@@ -198,27 +193,29 @@ class Game:
             move = input()
             move = tuple(move.split(","))
             self.make_move(move)
-            # print(move)
         winner = self.check_winner()
-        if winner and winner != 'tie':
-            print(f"And the winner is {winner}")
-            print(self.board)
+        if winner and winner != 'Draw':
+            print("And the winner is {}".format(winner))
+            self.display_board()
             return
-        elif winner == 'tie':
-            print('It is a tie')
-            print(self.board)
+        elif winner == 'Draw':
+            print('Draw')
+            self.display_board()
             return
         self.flip_player()
         self.play()
 
     def display_board(self):
-        for i in range(len(self.board)):
-            for j in range(len(self.board[i])):
-                print(self.board[i][j], end=' ')
+        for i in range(self.size):
+            for j in range(self.size):
+                if self.board[i][j]:
+                    print(self.board[i][j], end=' ')
+                else:
+                    print('-', end=' ')
             print()
 
 
-print("Input the size of the game")
+print("Input the size of the game:")
 board_size = int(input())
 
 print("Am I X or O ?")
