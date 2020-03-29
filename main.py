@@ -38,12 +38,12 @@ class Game:
                 for j in range(len(self.board[i])):
                     if first_elem == 'X' and self.board[i][j] == 'X':
                         count = count + 1
-                        if (count == self.size):
+                        if count == self.size:
                             winner = 'X'
                             break
                     elif first_elem == 'O' and self.board[i][j] == 'O':
                         count = count + 1
-                        if (count == self.size):
+                        if count == self.size:
                             winner = 'O'
                             break
                     else:
@@ -61,7 +61,7 @@ class Game:
                 for j in range(len(self.board[i])):
                     if first_elem == 'X' and self.board[j][i] == 'X':
                         count = count + 1
-                        if (count == self.size):
+                        if count == self.size:
                             winner = 'X'
                             break
                     elif first_elem == 'O' and self.board[j][i] == 'O':
@@ -190,7 +190,7 @@ class Game:
 
     def play(self):
         self.scoreSelection()
-        if (self.current_player == self.player):
+        if self.current_player == self.player:
             best_move = self.best_possible_move()
             self.make_move(best_move)
         else:
@@ -200,11 +200,11 @@ class Game:
             self.make_move(move)
             # print(move)
         winner = self.check_winner()
-        if (winner and winner != 'tie'):
+        if winner and winner != 'tie':
             print(f"And the winner is {winner}")
             print(self.board)
             return
-        elif(winner == 'tie'):
+        elif winner == 'tie':
             print('It is a tie')
             print(self.board)
             return
