@@ -18,6 +18,14 @@ class Game:
         self.alpha = -sys.maxsize
         self.beta = sys.maxsize
 
+    def scoreSelection(self):
+    if self.player == 'O':
+        self.scores = {
+            "X": -10,
+            "O": 10,
+            "tie": 0
+        }
+
     def check_winner(self):
         # check rows for winner
         def check_rows():
@@ -181,6 +189,7 @@ class Game:
     # recursively calls itself after every move
 
     def play(self):
+        self.scoreSelection()
         if (self.current_player == self.player):
             best_move = self.best_possible_move()
             self.make_move(best_move)
