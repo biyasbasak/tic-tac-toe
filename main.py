@@ -15,6 +15,8 @@ class Game:
             "O": -10,
             "tie": 0
         }
+        self.alpha = -sys.maxsize
+        self.beta = sys.maxsize
 
     def check_winner(self):
         # check rows for winner
@@ -147,6 +149,8 @@ class Game:
             return score
         if isMax:
             maxScore = -sys.maxsize
+            if score < self.alpha:
+                return self.alpha
             for i in range(len(self.board)):
                 for j in range(len(self.board[i])):
                     if self.board[i][j] is None:
@@ -154,9 +158,12 @@ class Game:
                         score = self.minimax(depth+1, False)
                         maxScore = max(score, maxScore)
                         self.board[i][j] = None
+            self.alpha = max(maxScore, self.alpha)
             return maxScore
         else:
             minScore = sys.maxsize
+            if self.beta < score:
+                return self.beta
             for i in range(len(self.board)):
                 for j in range(len(self.board[i])):
                     if self.board[i][j] is None:
@@ -164,6 +171,7 @@ class Game:
                         score = self.minimax(depth+1, True)
                         minScore = min(score, minScore)
                         self.board[i][j] = None
+            self.beta = max(minScore, self.beta)
             return minScore
 
     def make_move(self, move):
