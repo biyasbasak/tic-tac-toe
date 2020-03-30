@@ -35,17 +35,17 @@ class Game:
             winner = None
             for i in range(self.size):
                 for j in range(self.size):
-                    if j > self.target:
-                        break
                     if self.board[i][j]:
                         first_elem = self.board[i][j]
                         count = 0
                         for k in range(self.target):
-                            if self.board[i][j + k] != first_elem:
-                                j = j + k
-                                break
+                            if valid(i, j + k):
+                                if self.board[i][j + k] != first_elem:
+                                    break
+                                else:
+                                    count += 1
                             else:
-                                count += 1
+                                break
                         if count >= self.target:
                             winner = first_elem
                             return winner
@@ -55,17 +55,17 @@ class Game:
             winner = None
             for j in range(self.size):
                 for i in range(self.size):
-                    if i > self.target:
-                        break
                     if self.board[i][j]:
                         first_elem = self.board[i][j]
                         count = 0
                         for k in range(self.target):
-                            if self.board[i + k][j] != first_elem:
-                                i = i + k
-                                break
+                            if valid(i + k, j):
+                                if self.board[i + k][j] != first_elem:
+                                    break
+                                else:
+                                    count += 1
                             else:
-                                count += 1
+                                break
                         if count >= self.target:
                             winner = first_elem
                             return winner
