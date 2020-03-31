@@ -1,5 +1,8 @@
 import random
 import sys
+import resource
+resource.setrlimit(resource.RLIMIT_STACK, (2**29, -1))
+sys.setrecursionlimit(10**6)
 
 class Game:
     def __init__(self, n, player):
@@ -13,17 +16,13 @@ class Game:
             "X": 10,
             "O": -10,
             "tie": 0
+        } if player == 'X' else {
+            "X": -10,
+            "O": 10,
+            "tie": 0
         }
         self.alpha = -sys.maxsize
         self.beta = sys.maxsize
-
-    def scoreSelection(self):
-        if self.player == 'O':
-            self.scores = {
-                "X": -10,
-                "O": 10,
-                "tie": 0
-            }
 
     def check_winner(self):
         def valid(x, y):
@@ -89,6 +88,7 @@ class Game:
                             return winner
             return winner
 
+<<<<<<< HEAD
         def check_diagonal_b():
             winner = None
             for i in range(self.size):
@@ -110,6 +110,9 @@ class Game:
             return winner
 
         winner = check_columns() or check_rows() or check_diagonal_a() or check_diagonal_b()
+=======
+        winner = check_rows() or check_columns() or check_diagonals()
+>>>>>>> first iteration of alpha beta pruning
         if winner:
             return winner
 
@@ -119,15 +122,79 @@ class Game:
                 if self.board[i][j] == None:
                     flag = None
                     break
+<<<<<<< HEAD
         return flag   # check rows for winner
+=======
+        if (flag == 'tie'):
+            return 'tie'
+        return None
+
+    def flip_player(self):
+        if self.current_player == 'X':
+            self.current_player = 'O'
+        else:
+            self.current_player = 'X'
+
+    def best_possible_move(self):
+        best_score = -sys.maxsize
+        best_move = None
+        for i in range(len(self.board)):
+            for j in range(len(self.board[i])):
+                if self.board[i][j] is None:
+                    self.board[i][j] = self.current_player
+                    score = self.minimax(0, False, -sys.maxsize, sys.maxsize)
+                    print(score)
+                    if score > best_score:
+                        best_move = (i, j)
+                        best_score = score
+                    self.board[i][j] = None
+        return best_move
+
+    def minimax(self, depth, isMax, alpha, beta):
+        score = 0
+        print(depth)
+        if depth == self.size:
+            winner = self.check_winner()
+            if winner:
+                score = self.scores[winner]
+                return score
+            else:
+                return 0
+        if isMax:
+            maxScore = -sys.maxsize
+            for i in range(len(self.board)):
+                for j in range(len(self.board[i])):
+                    if self.board[i][j] is None:
+                        self.board[i][j] = self.player
+                        score = self.minimax(depth+1, False, alpha, beta)
+                        maxScore = max(score, maxScore)
+                        alpha = max(alpha, maxScore)
+                        self.board[i][j] = None
+                        if beta <= alpha:
+                            break
+            return maxScore
+        else:
+            minScore = sys.maxsize
+            for i in range(len(self.board)):
+                for j in range(len(self.board[i])):
+                    if self.board[i][j] is None:
+                        self.board[i][j] = self.opponent
+                        score = self.minimax(depth+1, True, alpha, beta)
+                        minScore = min(score, minScore)
+                        beta = min(beta, minScore)
+                        self.board[i][j] = None
+                        if beta <= alpha:
+                            break
+            return minScore
+>>>>>>> first iteration of alpha beta pruning
 
     def make_move(self, move):
         print(move)
         self.board[move[0]][move[1]] = self.current_player
+        print(self.board)
     # recursively calls itself after every move
 
     def play(self):
-        self.scoreSelection()
         if self.current_player == self.player:
             best_move = self.best_possible_move()
             self.make_move(best_move)
