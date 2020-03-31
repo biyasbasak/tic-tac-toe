@@ -1,8 +1,6 @@
 import random
 import sys
-import resource
-resource.setrlimit(resource.RLIMIT_STACK, (2**29, -1))
-sys.setrecursionlimit(10**6)
+import agent as dm
 
 
 class Game:
@@ -183,44 +181,115 @@ class Game:
         print(move)
         self.board[move[0]][move[1]] = self.current_player
         print(self.board)
-    # recursively calls itself after every move
+    
+    # OLD CODE
+    # def play(self):
+    #     if self.current_player == self.player:
+    #         best_move = self.best_possible_move()
+    #         self.make_move(best_move)
+    #     else:
+    #         print("Enter opponent's move")
+    #         move = input()
+    #         move = tuple(map(int, move.split(",")))
+    #         self.make_move(move)
+    #         # print(move)
+    #     winner = self.check_winner()
+    #     if winner and winner != 'tie':
+    #         print(f"And the winner is {winner}")
+    #         print(self.board)
+    #         return
+    #     elif winner == 'tie':
+    #         print('It is a tie')
+    #         print(self.board)
+    #         return
+    #     self.flip_player()
+    #     self.play()
+
+    # def display_board(self):
+    #     for i in range(len(self.board)):
+    #         for j in range(len(self.board[i])):
+    #             print(self.board[i][j], end=' ')
+    #         print()
+
+
 
     def play(self):
         if self.current_player == self.player:
             best_move = self.best_possible_move()
             self.make_move(best_move)
+            while True:
+                gameMove = gameAgent.make_move(best_move, gameId)
+                if gameMove['code'] == "OK":
+                    print("Move ID: ", gameMove['moveId'])
+                    break
+                else:
+                    print(gameMove)
         else:
-            print("Enter opponent's move")
-            move = input()
+            while True:
+                gameBoardMap = gameAgent.get_board_map(gameId)
+                # print(gameBoardMap[-31])
+                # print("\n" + gameBoardMap[-39:-36])
+                if gameBoardMap[-31] == self.opponent:
+                    move = gameBoardMap[-39:-36]
+                    break
+                # else:
+                #     print(gameBoardMap)
+            # print("Enter opponent's move")
+            # move = input()
             move = tuple(map(int, move.split(",")))
             self.make_move(move)
-            # print(move)
         winner = self.check_winner()
         if winner and winner != 'tie':
             print(f"And the winner is {winner}")
             print(self.board)
+            # self.display_board()
             return
         elif winner == 'tie':
             print('It is a tie')
             print(self.board)
+            # self.display_board()
             return
         self.flip_player()
         self.play()
 
-    def display_board(self):
-        for i in range(len(self.board)):
-            for j in range(len(self.board[i])):
-                print(self.board[i][j], end=' ')
-            print()
 
+gameId = None
+bSize = None
+while True:
+    gameAgent = dm.agent()
+    print("Enter the Opponent Team ID:")
+    oppoTeamId = input()
+    print("Enter the board size:")
+    bSize = input()
+    print("Enter target:")
+    target = input()
+    gameIdText = gameAgent.create_game("1191", oppoTeamId, bSize, target)
+    if gameIdText['code'] == "OK":
+        gameId = gameIdText['gameId']
+        break
+    else:
+        print("Invalid Team Id")
+        continue
 
-print("Input the size of the game")
-board_size = int(input())
+print("Game ID: " + str(gameId))
 
 print("Am I X or O ?")
 
 player = input()
 
-board = Game(board_size, player)
+board = Game(int(bSize), player)
 
 board.play()
+
+
+
+# print("Input the size of the game")
+# board_size = int(input())
+
+# print("Am I X or O ?")
+
+# player = input()
+
+# board = Game(board_size, player)
+
+# board.play()
