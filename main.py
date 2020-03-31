@@ -221,6 +221,7 @@ class Game:
                 gameMove = gameAgent.make_move(best_move, gameId)
                 if gameMove['code'] == "OK":
                     print("Move ID: ", gameMove['moveId'])
+                    gameAgent.get_board_string(gameId)
                     break
                 else:
                     print(gameMove)
@@ -238,6 +239,7 @@ class Game:
             # move = input()
             move = tuple(map(int, move.split(",")))
             self.make_move(move)
+            gameAgent.get_board_string(gameId)
         winner = self.check_winner()
         if winner and winner != 'tie':
             print(f"And the winner is {winner}")
@@ -255,6 +257,7 @@ class Game:
 
 gameId = None
 bSize = None
+target = None
 while True:
     gameAgent = dm.agent()
     print("Enter the Opponent Team ID:")
@@ -266,16 +269,13 @@ while True:
     gameIdText = gameAgent.create_game("1191", oppoTeamId, bSize, target)
     if gameIdText['code'] == "OK":
         gameId = gameIdText['gameId']
+        print("Game ID: " + str(gameId))
         break
     else:
         print("Invalid Team Id")
         continue
 
-print("Game ID: " + str(gameId))
-
-print("Am I X or O ?")
-
-player = input()
+player = "O"
 
 board = Game(int(bSize), player)
 
