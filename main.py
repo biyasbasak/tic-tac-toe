@@ -482,6 +482,7 @@ class Game:
 
 gameId = None
 bSize = None
+target = None
 while True:
     gameAgent = dm.agent()
     print("Enter the Opponent Team ID:")
@@ -493,16 +494,13 @@ while True:
     gameIdText = gameAgent.create_game("1191", oppoTeamId, bSize, target)
     if gameIdText['code'] == "OK":
         gameId = gameIdText['gameId']
+        print("Game ID: " + str(gameId))
         break
     else:
         print("Invalid Team Id")
         continue
 
-print("Game ID: " + str(gameId))
-
-print("Am I X or O ?")
-
-player = input()
+player = "O"
 
 board = Game(int(bSize), player)
 
