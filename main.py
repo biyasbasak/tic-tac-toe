@@ -9,7 +9,6 @@ class Game:
         self.opponent = "O" if player == 'X' else 'X'
         self.current_player = 'X'  # initial player is X
         self.board = [[None for x in range(n)] for x in range(n)]
-        self.move_count = n ** n
         self.scores = {
             "X": 10,
             "O": -10,
@@ -19,8 +18,8 @@ class Game:
         self.beta = sys.maxsize
 
     def scoreSelection(self):
-    if self.player == 'O':
-        self.scores = {
+        if self.player == 'O':
+            self.scores = {
             "X": -10,
             "O": 10,
             "tie": 0
@@ -184,8 +183,7 @@ class Game:
 
     def make_move(self, move):
         print(move)
-        self.board[int(move[0])][int(move[1])] = self.current_player
-        self.move_count = self.move_count - 1
+        self.board[move[0]][move[1]] = self.current_player
     # recursively calls itself after every move
 
     def play(self):
@@ -196,7 +194,7 @@ class Game:
         else:
             print("Enter opponent's move")
             move = input()
-            move = tuple(move.split(","))
+            move = tuple(map(int, move.split(",")))
             self.make_move(move)
             # print(move)
         winner = self.check_winner()
