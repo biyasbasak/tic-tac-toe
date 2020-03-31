@@ -1,5 +1,8 @@
 import random
 import sys
+import resource
+resource.setrlimit(resource.RLIMIT_STACK, (2**29, -1))
+sys.setrecursionlimit(10**6)
 
 
 class Game:
@@ -13,17 +16,13 @@ class Game:
             "X": 10,
             "O": -10,
             "tie": 0
-        }
-        self.alpha = -sys.maxsize
-        self.beta = sys.maxsize
-
-    def scoreSelection(self):
-        if self.player == 'O':
-            self.scores = {
+        } if player == 'X' else {
             "X": -10,
             "O": 10,
             "tie": 0
         }
+        self.alpha = -sys.maxsize
+        self.beta = sys.maxsize
 
     def check_winner(self):
         # check rows for winner
@@ -109,13 +108,7 @@ class Game:
                         count = 0
             return winner
 
-        winner = check_rows()
-        if winner:
-            return winner
-        winner = check_columns()
-        if winner:
-            return winner
-        winner = check_diagonals()
+        winner = check_rows() or check_columns() or check_diagonals()
         if winner:
             return winner
         flag = 'tie'
@@ -141,53 +134,58 @@ class Game:
             for j in range(len(self.board[i])):
                 if self.board[i][j] is None:
                     self.board[i][j] = self.current_player
-                    score = self.minimax(0, False)
+                    score = self.minimax(0, False, -sys.maxsize, sys.maxsize)
+                    print(score)
                     if score > best_score:
                         best_move = (i, j)
                         best_score = score
                     self.board[i][j] = None
         return best_move
 
-    def minimax(self, depth, isMax):
-        winner = self.check_winner()
+    def minimax(self, depth, isMax, alpha, beta):
         score = 0
-        if winner:
-            score = self.scores[winner]
-            return score
+        print(depth)
+        if depth == self.size:
+            winner = self.check_winner()
+            if winner:
+                score = self.scores[winner]
+                return score
+            else:
+                return 0
         if isMax:
             maxScore = -sys.maxsize
-            if score < self.alpha:
-                return self.alpha
             for i in range(len(self.board)):
                 for j in range(len(self.board[i])):
                     if self.board[i][j] is None:
                         self.board[i][j] = self.player
-                        score = self.minimax(depth+1, False)
+                        score = self.minimax(depth+1, False, alpha, beta)
                         maxScore = max(score, maxScore)
+                        alpha = max(alpha, maxScore)
                         self.board[i][j] = None
-            self.alpha = max(maxScore, self.alpha)
+                        if beta <= alpha:
+                            break
             return maxScore
         else:
             minScore = sys.maxsize
-            if self.beta < score:
-                return self.beta
             for i in range(len(self.board)):
                 for j in range(len(self.board[i])):
                     if self.board[i][j] is None:
                         self.board[i][j] = self.opponent
-                        score = self.minimax(depth+1, True)
+                        score = self.minimax(depth+1, True, alpha, beta)
                         minScore = min(score, minScore)
+                        beta = min(beta, minScore)
                         self.board[i][j] = None
-            self.beta = max(minScore, self.beta)
+                        if beta <= alpha:
+                            break
             return minScore
 
     def make_move(self, move):
         print(move)
         self.board[move[0]][move[1]] = self.current_player
+        print(self.board)
     # recursively calls itself after every move
 
     def play(self):
-        self.scoreSelection()
         if self.current_player == self.player:
             best_move = self.best_possible_move()
             self.make_move(best_move)
