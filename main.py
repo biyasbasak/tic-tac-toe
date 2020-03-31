@@ -440,6 +440,7 @@ class Game:
                 gameMove = gameAgent.make_move(best_move, gameId)
                 if gameMove['code'] == "OK":
                     print("Move ID: ", gameMove['moveId'])
+                    gameAgent.get_board_string(gameId)
                     break
                 else:
                     print(gameMove)
@@ -457,6 +458,7 @@ class Game:
             # move = input()
             move = tuple(move.split(","))
             self.make_move(move)
+            gameAgent.get_board_string(gameId)
         winner = self.check_winner()
         if winner and winner != 'tie':
             print(f"And the winner is {winner}")

@@ -9,7 +9,6 @@ class agent:
         self.baseURL = "http://www.notexponential.com/aip2pgaming/api/index.php"
 
     def get_board_string(self, gameId):
-        # useless
         headers = {
             'x-api-key': '21be1b176c5d8c7bc09c',
             'userid': '843',
@@ -20,18 +19,8 @@ class agent:
             "gameId": gameId
         }
         response = requests.get(self.baseURL, params=payload, headers=headers)
-        print(response.text)
-
-        split = response.text.split('"')
-        board_string = split[3].split('\\n')[:-1]
-        self.board = []
-        for line in board_string:
-            line = list(line)
-            self.board.append(line)
-        print(self.board)
-
-        self.state = split[-2]
-        print(self.state)
+        r = response.json()
+        print(r["output"])
 
     def get_board_map(self, gameId):
         headers = {
