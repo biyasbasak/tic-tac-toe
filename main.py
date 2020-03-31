@@ -1,127 +1,134 @@
 import random
 import sys
+import demo as dm
 
 
 class Game:
     def __init__(self, n, player):
         self.size = n
-        self.target = int(n / 2)
-        self.player = 'X' if player == 'X' else 'O'
-        self.opponent = 'O' if player == 'X' else 'X'
-        self.current_player = 'X'  # initial player is X
+        self.player = player
+        self.opponent = "O" if player == "X" else "X"
+        self.current_player = "O"  # initial player is X
         self.board = [[None for x in range(n)] for x in range(n)]
-        self.move_count = n ** n
+        self.move_count = n * n
         self.scores = {
             "X": 10,
             "O": -10,
-            "Draw": 0
+            "tie": 0
         }
         self.alpha = -sys.maxsize
         self.beta = sys.maxsize
 
-    def score_selection(self):
-        if self.player == 'O':
+    def scoreSelection(self):
+        if self.player == "O":
             self.scores = {
                 "X": -10,
                 "O": 10,
-                "Draw": 0
+                "tie": 0
             }
 
     def check_winner(self):
-        def valid(x, y):
-            return 0 <= x < self.size and 0 <= y < self.size
-
+        # check rows for winner
         def check_rows():
             winner = None
-            for i in range(self.size):
-                for j in range(self.size):
-                    if self.board[i][j]:
-                        first_elem = self.board[i][j]
+            for i in range(len(self.board)):
+                count = 0
+                if (winner):
+                    break
+                first_elem = self.board[i][0]
+                for j in range(len(self.board[i])):
+                    if first_elem == 'X' and self.board[i][j] == 'X':
+                        count = count + 1
+                        if count == self.size:
+                            winner = 'X'
+                            break
+                    elif first_elem == 'O' and self.board[i][j] == 'O':
+                        count = count + 1
+                        if count == self.size:
+                            winner = 'O'
+                            break
+                    else:
                         count = 0
-                        for k in range(self.target):
-                            if valid(i, j + k):
-                                if self.board[i][j + k] != first_elem:
-                                    break
-                                else:
-                                    count += 1
-                            else:
-                                break
-                        if count >= self.target:
-                            winner = first_elem
-                            return winner
             return winner
+        # check columns for winner
 
         def check_columns():
             winner = None
-            for j in range(self.size):
-                for i in range(self.size):
-                    if self.board[i][j]:
-                        first_elem = self.board[i][j]
+            for i in range(len(self.board)):
+                count = 0
+                if winner:
+                    break
+                first_elem = self.board[0][i]
+                for j in range(len(self.board[i])):
+                    if first_elem == 'X' and self.board[j][i] == 'X':
+                        count = count + 1
+                        if count == self.size:
+                            winner = 'X'
+                            break
+                    elif first_elem == 'O' and self.board[j][i] == 'O':
+                        count = count + 1
+                        if count == self.size:
+                            winner = 'O'
+                            break
+                    else:
                         count = 0
-                        for k in range(self.target):
-                            if valid(i + k, j):
-                                if self.board[i + k][j] != first_elem:
-                                    break
-                                else:
-                                    count += 1
-                            else:
-                                break
-                        if count >= self.target:
-                            winner = first_elem
-                            return winner
             return winner
 
-        def check_diagonal_a():
+        def check_diagonals():
+            count = 0
             winner = None
-            for i in range(self.size):
-                for j in range(self.size):
-                    if self.board[i][j]:
-                        first_elem = self.board[i][j]
+            first_elem = self.board[0][0]
+            last_elem = self.board[0][self.size - 1]
+            for i in range(len(self.board)):
+                if first_elem == 'X' and self.board[i][i] == 'X':
+                    count = count + 1
+                    if count == self.size:
+                        winner = 'X'
+                        break
+                elif first_elem == 'O' and self.board[i][i] == 'O':
+                    count = count + 1
+                    if count == self.size:
+                        winner = 'O'
+                        break
+                else:
+                    count = 0
+            if winner:
+                return winner
+            else:
+                count = 0
+                for i in range(len(self.board)):
+                    if last_elem == 'X' and self.board[i][len(self.board) - 1 - i] == 'X':
+                        count = count + 1
+                        if count == self.size:
+                            winner = 'X'
+                            break
+                    elif last_elem == 'O' and self.board[i][len(self.board) - 1 - i] == 'O':
+                        count = count + 1
+                        if count == self.size:
+                            winner = 'O'
+                            break
+                    else:
                         count = 0
-                        for k in range(self.target):
-                            if valid(i + k, j + k):
-                                if self.board[i + k][j + k] != first_elem:
-                                    break
-                                else:
-                                    count += 1
-                            else:
-                                break
-                        if count >= self.target:
-                            winner = first_elem
-                            return winner
             return winner
 
-        def check_diagonal_b():
-            winner = None
-            for i in range(self.size):
-                for j in range(self.size):
-                    if self.board[i][j]:
-                        first_elem = self.board[i][j]
-                        count = 0
-                        for k in range(self.target):
-                            if valid(i + k, j - k):
-                                if self.board[i + k][j - k] != first_elem:
-                                    break
-                                else:
-                                    count += 1
-                            else:
-                                break
-                        if count >= self.target:
-                            winner = first_elem
-                            return winner
-            return winner
-
-        winner = check_columns() or check_rows() or check_diagonal_a() or check_diagonal_b()
+        winner = check_rows()
         if winner:
             return winner
-
-        flag = 'Draw'
-        for i in range(self.size):
-            for j in range(self.size):
-                if self.board[i][j] == None:
+        winner = check_columns()
+        if winner:
+            return winner
+        winner = check_diagonals()
+        if winner:
+            return winner
+        flag = 'tie'
+        for i in range(len(self.board)):
+            for j in range(len(self.board[i])):
+                if self.board[i][j] is None:
                     flag = None
                     break
-        return flag
+        if flag == 'tie':
+            return 'tie'
+        return None
 
     def flip_player(self):
         if self.current_player == 'X':
@@ -130,7 +137,6 @@ class Game:
             self.current_player = 'X'
 
     def best_possible_move(self):
-        print("Computing best move for {}...".format(self.current_player))
         best_score = -sys.maxsize
         best_move = None
         for i in range(len(self.board)):
@@ -146,82 +152,130 @@ class Game:
 
     def minimax(self, depth, isMax):
         winner = self.check_winner()
-        score = 0
         if winner:
-            score = self.scores[winner]
-            return score
+            scoreW = self.scores[winner]
+            return scoreW
         if isMax:
             maxScore = -sys.maxsize
-            if score < self.alpha:
-                return self.alpha
             for i in range(len(self.board)):
                 for j in range(len(self.board[i])):
                     if self.board[i][j] is None:
                         self.board[i][j] = self.player
-                        score = self.minimax(depth+1, False)
+                        score = self.minimax(depth + 1, False)
                         maxScore = max(score, maxScore)
                         self.board[i][j] = None
-            self.alpha = max(maxScore, self.alpha)
+                        if self.beta > maxScore:
+                            self.alpha = max(self.alpha, maxScore)
+                            return maxScore
+                        # if maxScore >= self.beta:
+                        #     return maxScore
+                        # if self.alpha >= self.beta:
+                        #     break
+                        # if maxScore > self.alpha:
+                        #     self.alpha = maxScore
+
             return maxScore
         else:
             minScore = sys.maxsize
-            if self.beta < score:
-                return self.beta
             for i in range(len(self.board)):
                 for j in range(len(self.board[i])):
                     if self.board[i][j] is None:
                         self.board[i][j] = self.opponent
-                        score = self.minimax(depth+1, True)
+                        score = self.minimax(depth + 1, True)
                         minScore = min(score, minScore)
                         self.board[i][j] = None
-            self.beta = max(minScore, self.beta)
+                        if self.alpha < minScore:
+                            self.beta = min(self.beta, minScore)
+                            return minScore
+                        # if minScore <= self.alpha:
+                        #     return minScore
+                        # if self.beta <= self.alpha:
+                        #     break
+                        # if minScore < self.beta:
+                        #     self.beta = minScore
+
             return minScore
 
     def make_move(self, move):
+        # if self.board[int(move[0])][int(move[1])] is None:
         print(move)
         self.board[int(move[0])][int(move[1])] = self.current_player
         self.move_count = self.move_count - 1
+        # else:
+        #     print("Invalid Move")
     # recursively calls itself after every move
 
     def play(self):
-        self.score_selection()
+        self.scoreSelection()
         if self.current_player == self.player:
             best_move = self.best_possible_move()
             self.make_move(best_move)
+            while True:
+                gameMove = gameAgent.make_move(best_move, gameId)
+                if gameMove['code'] == "OK":
+                    print("Move ID: ", gameMove['moveId'])
+                    break
+                else:
+                    print(gameMove)
         else:
-            print("Enter opponent's move")
-            move = input()
+            while True:
+                gameBoardMap = gameAgent.get_board_map(gameId)
+                # print(gameBoardMap[-31])
+                # print("\n" + gameBoardMap[-39:-36])
+                if gameBoardMap[-31] == self.opponent:
+                    move = gameBoardMap[-39:-36]
+                    break
+                # else:
+                #     print(gameBoardMap)
+            # print("Enter opponent's move")
+            # move = input()
             move = tuple(move.split(","))
             self.make_move(move)
         winner = self.check_winner()
-        if winner and winner != 'Draw':
-            print("And the winner is {}".format(winner))
-            self.display_board()
+        if winner and winner != 'tie':
+            print(f"And the winner is {winner}")
+            print(self.board)
+            # self.display_board()
             return
-        elif winner == 'Draw':
-            print('Draw')
-            self.display_board()
+        elif winner == 'tie':
+            print('It is a tie')
+            print(self.board)
+            # self.display_board()
             return
         self.flip_player()
         self.play()
 
     def display_board(self):
-        for i in range(self.size):
-            for j in range(self.size):
-                if self.board[i][j]:
-                    print(self.board[i][j], end=' ')
-                else:
-                    print('-', end=' ')
+        for i in range(len(self.board)):
+            for j in range(len(self.board[i])):
+                print(self.board[i][j], end=' ')
             print()
 
 
-print("Input the size of the game:")
-board_size = int(input())
+gameId = None
+bSize = None
+while True:
+    gameAgent = dm.agent()
+    print("Enter the Opponent Team ID:")
+    oppoTeamId = input()
+    print("Enter the board size:")
+    bSize = input()
+    print("Enter target:")
+    target = input()
+    gameIdText = gameAgent.create_game("1191", oppoTeamId, bSize, target)
+    if gameIdText['code'] == "OK":
+        gameId = gameIdText['gameId']
+        break
+    else:
+        print("Invalid Team Id")
+        continue
+
+print("Game ID: " + str(gameId))
 
 print("Am I X or O ?")
 
 player = input()
 
-board = Game(board_size, player)
+board = Game(int(bSize), player)
 
 board.play()
