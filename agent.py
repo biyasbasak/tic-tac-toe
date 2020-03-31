@@ -9,6 +9,7 @@ class agent:
         self.baseURL = "http://www.notexponential.com/aip2pgaming/api/index.php"
 
     def get_board_string(self, gameId):
+        # useless
         headers = {
             'x-api-key': '21be1b176c5d8c7bc09c',
             'userid': '843',
@@ -33,7 +34,6 @@ class agent:
         print(self.state)
 
     def get_board_map(self, gameId):
-        # useless
         headers = {
             "x-api-key": "21be1b176c5d8c7bc09c",
             "userid": "843",
@@ -44,7 +44,8 @@ class agent:
             "gameId": gameId
         }
         response = requests.get(self.baseURL, params=payload, headers=headers)
-        print(response.text)
+        # print(response.text)
+        return response.text
 
     def get_moves(self, gameId, move_count):
         # useless
@@ -86,9 +87,10 @@ class agent:
             "gameId": gameID
         }
         response = requests.post(self.baseURL, headers=headers, data=payload)
-        print(response.text)
+        # print(response.text)
+        return response.json()
 
-    def create_game(self, teamId1, teamId2):
+    def create_game(self, teamId1, teamId2, boardSize, target):
         headers = {
             "x-api-key": "90da155fac97298ba06a",
             "userId": "837",
@@ -98,25 +100,26 @@ class agent:
             "type": "game",
             "teamId1": teamId1,
             "teamId2": teamId2,
-            "gameType": "TTT"
+            "gameType": "TTT",
+            "boardSize": boardSize,
+            "target": target
         }
         response = requests.post(self.baseURL, headers=headers, data=payload)
-        print(response.text)
-        split = response.text.split('"')
-        gameID = int(split[-1][1:-3])
-        return gameID
+        return response.json()
+        # print(response.text)
+        # split = response.text.split('"')
+        # gameID = int(split[-1][1:-3])
+        # return gameID
 
 
-def test():
-    closeAI = agent()
-    opponent = 1191
-    # new_game = closeAI.create_game(1191, opponent)
-    game = 196
-    closeAI.get_games()
-    closeAI.get_board_string(game)
-    closeAI.get_board_map(game)
-    closeAI.make_move((6, 8), game)
-    closeAI.get_moves(game, 20)
+# def test():
+#     closeAI = agent()
+#     # opponent = 1191
+#     # new_game = closeAI.create_game(1191, opponent)
+#     game = 196
+#     closeAI.get_games()
+#     closeAI.get_board_string(game)
+#     closeAI.get_board_map(game)
+#     closeAI.make_move((6, 8), game)
+#     closeAI.get_moves(game, 20)
 
-
-test()
