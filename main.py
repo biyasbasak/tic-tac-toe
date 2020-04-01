@@ -4,12 +4,12 @@ import agent as dm
 
 
 class Game:
-    def __init__(self, n, player):
+    def __init__(self, n, player, t):
         self.size = n
-        self.target = 3 if n == 3 or n == 4 else int(n / 2)
+        self.target = int(t)
         self.player = player
         self.opponent = "O" if player == 'X' else 'X'
-        self.current_player = 'X'  # initial player is X
+        self.current_player = 'O'  # initial player is X
         self.board = [[None for x in range(n)] for x in range(n)]
         # self.board = [['X', 'X', 'O'], ['O', 'O', None], ['X', None, None]]
         self.scores = {
@@ -181,7 +181,7 @@ class Game:
         best_score = -sys.maxsize if isMax is True else  sys.maxsize
         move = (-1, -1)
         # this works but not good
-        if depth == 5:
+        if depth == 6:
             winner = self.check_winner()
             # print(f"called{winner}")
             if winner:
@@ -226,27 +226,27 @@ class Game:
         self.board[move[0]][move[1]] = self.current_player
         # print(self.board)
     # OLD Code
-    def play(self):
-        if self.current_player == self.player:
-            best_move = self.best_possible_move()
-            self.make_move(best_move)
-        else:
-            print("Enter opponent's move")
-            move = input()
-            move = tuple(map(int, move.split(",")))
-            self.make_move(move)
-            # print(move)
-        winner = self.check_winner()
-        if winner and winner != 'tie':
-            print(f"And the winner is {winner}")
-            print(self.board)
-            return
-        elif winner == 'tie':
-            print('It is a tie')
-            print(self.board)
-            return
-        self.flip_player()
-        self.play()
+    # def play(self):
+    #     if self.current_player == self.player:
+    #         best_move = self.best_possible_move()
+    #         self.make_move(best_move)
+    #     else:
+    #         print("Enter opponent's move")
+    #         move = input()
+    #         move = tuple(map(int, move.split(",")))
+    #         self.make_move(move)
+    #         # print(move)
+    #     winner = self.check_winner()
+    #     if winner and winner != 'tie':
+    #         print(f"And the winner is {winner}")
+    #         print(self.board)
+    #         return
+    #     elif winner == 'tie':
+    #         print('It is a tie')
+    #         print(self.board)
+    #         return
+    #     self.flip_player()
+    #     self.play()
 
     def play(self):
         if self.current_player == self.player:
