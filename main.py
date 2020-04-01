@@ -129,51 +129,62 @@ class Game:
             self.current_player = 'X'
 
     def best_possible_move(self):
-        res = self.minimax((0, 0), 0, True, -sys.maxsize, sys.maxsize)
-        return res[0]
+        best_score = -sys.maxsize
+        best_move = None
+        for i in range(len(self.board)):
+            for j in range(len(self.board[i])):
+                if self.board[i][j] is None:
+                    self.board[i][j] = self.current_player
+                    score = self.minimax(0, False, -sys.maxsize, sys.maxsize)
+                    if score > best_score:
+                        best_move = (i, j)
+                        best_score = score
+                    self.board[i][j] = None
+        return best_move
 
-    def minimax(self, init_move, depth, isMax, alpha, beta):
+    def minimax(self, depth, isMax, alpha, beta):
         score = 0
-        move = init_move
         # this works but not good
         if depth == 3:
             winner = self.check_winner()
             if winner:
                 score = self.scores[winner]
-                return (move, score)
+                return score
             else:
-                return (move, 0)
+                return 0
+        else:
+            winner = self.check_winner()
+            if (winner):
+                score = self.scores[winner]
+                return score
         if isMax:
             maxScore = -sys.maxsize
             for i in range(len(self.board)):
                 for j in range(len(self.board[i])):
                     if self.board[i][j] is None:
                         self.board[i][j] = self.player
-                        res = self.minimax((i, j), depth+1, False, alpha, beta)
+                        score = self.minimax(depth+1, False, alpha, beta)
                         self.board[i][j] = None
-                        if res[1] > maxScore:
-                            move = (i, j)
-                            maxScore = res[1]
+                        if score > maxScore:
+                            maxScore = max(score, maxScore)
                             alpha = max(alpha, maxScore)
                             if beta <= alpha:
                                 break
-            return (move, maxScore)
+            return maxScore
         else:
             minScore = sys.maxsize
             for i in range(len(self.board)):
                 for j in range(len(self.board[i])):
                     if self.board[i][j] is None:
                         self.board[i][j] = self.opponent
-                        res = self.minimax((i, j), depth+1, True, alpha, beta)
+                        score = self.minimax(depth+1, True, alpha, beta)
                         self.board[i][j] = None
-                        if (res[1] < minScore):
-                            move = (i, j)
-                            minScore = min(res[1], minScore)
+                        if (score < minScore):
+                            minScore = min(score, minScore)
                             beta = min(beta, minScore)
-                            self.board[i][j] = None
                             if beta <= alpha:
                                 break
-            return (move, minScore)
+            return minScore
 
     def make_move(self, move):
         print(move)
