@@ -1,6 +1,6 @@
 import random
 import sys
-
+import agent as dm
 
 class Game:
     def __init__(self, n, player):
@@ -136,7 +136,7 @@ class Game:
         score = 0
         move = init_move
         # this works but not good
-        if depth == 2:
+        if depth == 3:
             winner = self.check_winner()
             if winner:
                 score = self.scores[winner]
