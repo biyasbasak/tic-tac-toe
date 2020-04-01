@@ -376,11 +376,15 @@ class Game:
                     self.board[i][j] = None
         return best_move
 
-    def minimax(self, depth, isMax):
-        winner = self.check_winner()
-        if winner:
-            scoreW = self.scores[winner]
-            return scoreW
+    def minimax(self, depth, isMax, alpha, beta):
+        score = 0
+        if depth == 6:
+            winner = self.check_winner()
+            if winner:
+                score = self.scores[winner]
+                return score
+            else:
+                return 0
         if isMax:
             maxScore = -sys.maxsize
             for i in range(len(self.board)):
@@ -390,16 +394,8 @@ class Game:
                         score = self.minimax(depth + 1, False)
                         maxScore = max(score, maxScore)
                         self.board[i][j] = None
-                        if self.beta > maxScore:
-                            self.alpha = max(self.alpha, maxScore)
-                            return maxScore
-                        # if maxScore >= self.beta:
-                        #     return maxScore
-                        # if self.alpha >= self.beta:
-                        #     break
-                        # if maxScore > self.alpha:
-                        #     self.alpha = maxScore
-
+                        if alpha <= beta:
+                            break
             return maxScore
         else:
             minScore = sys.maxsize
@@ -425,50 +421,29 @@ class Game:
     def make_move(self, move):
         # if self.board[int(move[0])][int(move[1])] is None:
         print(move)
-        self.board[int(move[0])][int(move[1])] = self.current_player
-        self.move_count = self.move_count - 1
-        # else:
-        #     print("Invalid Move")
-    # recursively calls itself after every move
-
+        self.board[move[0]][move[1]] = self.current_player
+        print(self.board)
+    
+    # OLD CODE
     def play(self):
         self.scoreSelection()
         if self.current_player == self.player:
             best_move = self.best_possible_move()
             self.make_move(best_move)
-            while True:
-                gameMove = gameAgent.make_move(best_move, gameId)
-                if gameMove['code'] == "OK":
-                    print("Move ID: ", gameMove['moveId'])
-                    gameAgent.get_board_string(gameId)
-                    break
-                else:
-                    print(gameMove)
         else:
-            while True:
-                gameBoardMap = gameAgent.get_board_map(gameId)
-                # print(gameBoardMap[-31])
-                # print("\n" + gameBoardMap[-39:-36])
-                if gameBoardMap[-31] == self.opponent:
-                    move = gameBoardMap[-39:-36]
-                    break
-                # else:
-                #     print(gameBoardMap)
-            # print("Enter opponent's move")
-            # move = input()
-            move = tuple(move.split(","))
+            print("Enter opponent's move")
+            move = input()
+            move = tuple(map(int, move.split(",")))
             self.make_move(move)
-            gameAgent.get_board_string(gameId)
+            # print(move)
         winner = self.check_winner()
         if winner and winner != 'tie':
             print(f"And the winner is {winner}")
             print(self.board)
-            # self.display_board()
             return
         elif winner == 'tie':
             print('It is a tie')
             print(self.board)
-            # self.display_board()
             return
         self.flip_player()
         self.play()
@@ -480,28 +455,84 @@ class Game:
             print()
 
 
-gameId = None
-bSize = None
-target = None
-while True:
-    gameAgent = dm.agent()
-    print("Enter the Opponent Team ID:")
-    oppoTeamId = input()
-    print("Enter the board size:")
-    bSize = input()
-    print("Enter target:")
-    target = input()
-    gameIdText = gameAgent.create_game("1191", oppoTeamId, bSize, target)
-    if gameIdText['code'] == "OK":
-        gameId = gameIdText['gameId']
-        print("Game ID: " + str(gameId))
-        break
-    else:
-        print("Invalid Team Id")
-        continue
 
-player = "O"
+    # def play(self):
+    #     if self.current_player == self.player:
+    #         best_move = self.best_possible_move()
+    #         self.make_move(best_move)
+    #         while True:
+    #             gameMove = gameAgent.make_move(best_move, gameId)
+    #             if gameMove['code'] == "OK":
+    #                 print("Move ID: ", gameMove['moveId'])
+    #                 gameAgent.get_board_string(gameId)
+    #                 break
+    #             else:
+    #                 print(gameMove)
+    #     else:
+    #         while True:
+    #             gameBoardMap = gameAgent.get_board_map(gameId)
+    #             # print(gameBoardMap[-31])
+    #             # print("\n" + gameBoardMap[-39:-36])
+    #             if gameBoardMap[-31] == self.opponent:
+    #                 move = gameBoardMap[-39:-36]
+    #                 break
+    #             # else:
+    #             #     print(gameBoardMap)
+    #         # print("Enter opponent's move")
+    #         # move = input()
+    #         move = tuple(map(int, move.split(",")))
+    #         self.make_move(move)
+    #         gameAgent.get_board_string(gameId)
+    #     winner = self.check_winner()
+    #     if winner and winner != 'tie':
+    #         print(f"And the winner is {winner}")
+    #         print(self.board)
+    #         # self.display_board()
+    #         return
+    #     elif winner == 'tie':
+    #         print('It is a tie')
+    #         print(self.board)
+    #         # self.display_board()
+    #         return
+    #     self.flip_player()
+    #     self.play()
 
-board = Game(int(bSize), player)
+
+# gameId = None
+# bSize = None
+# target = None
+# while True:
+#     gameAgent = dm.agent()
+#     print("Enter the Opponent Team ID:")
+#     oppoTeamId = input()
+#     print("Enter the board size:")
+#     bSize = input()
+#     print("Enter target:")
+#     target = input()
+#     gameIdText = gameAgent.create_game("1191", oppoTeamId, bSize, target)
+#     if gameIdText['code'] == "OK":
+#         gameId = gameIdText['gameId']
+#         print("Game ID: " + str(gameId))
+#         break
+#     else:
+#         print("Invalid Team Id")
+#         continue
+
+# player = "O"
+
+# board = Game(int(bSize), player)
+
+# board.play()
+
+
+
+print("Input the size of the game")
+board_size = int(input())
+
+print("Am I X or O ?")
+
+player = input()
+
+board = Game(board_size, player)
 
 board.play()
