@@ -180,7 +180,8 @@ class Game:
     def minimax2(self, depth, isMax, alpha, beta):
         best_score = -sys.maxsize if isMax is True else  sys.maxsize
         move = (-1, -1)
-        depth_evaluator = 3 if self.move_counter < 120 else 6
+        depth_evaluator = 3 if self.move_counter < 120 else 4
+        depth_evaluator = 6 if self.move_counter > 130 else depth_evaluator
         # this works but not good
         if depth == depth_evaluator:
             winner = self.check_winner()
