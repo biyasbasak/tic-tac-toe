@@ -218,6 +218,12 @@ class Game:
                     return self.evaluation('X')
                 else:
                     return self.evaluation('O')
+        else:
+            winner = self.check_winner()
+            # print(f"called{winner}")
+            if winner:
+                score = self.scores[winner]
+                return score
         if isMax:
             maxScore = -sys.maxsize
             for i in range(len(self.board)):
@@ -301,7 +307,7 @@ class Game:
 
     #                 self.board[i][j] = None
 
-    #     return (move, best_score)
+        # return (move, best_score)
 
     def make_move(self, move):
         self.board[move[0]][move[1]] = self.current_player
@@ -309,7 +315,7 @@ class Game:
         print(move)
         # for line in self.board:
         #     print(line)
-        #print(self.board)
+        # print(self.board)
 
     # # OLD Code
     # def play(self):
