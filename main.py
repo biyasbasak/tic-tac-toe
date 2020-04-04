@@ -207,8 +207,10 @@ class Game:
 
     def minimax(self, depth, isMax, alpha, beta):
         score = 0
+        depth_evaluator = 3 if self.move_counter < 120 else 4
+        depth_evaluator = 6 if self.move_counter > 130 else depth_evaluator
         # this works but not good
-        if depth == 3:
+        if depth == depth_evaluator:
             winner = self.check_winner()
             if winner:
                 score = self.scores[winner]
